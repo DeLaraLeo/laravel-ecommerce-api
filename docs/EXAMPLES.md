@@ -8,31 +8,315 @@ This document provides code examples for common use cases in this microservice.
 
 ## Authentication
 
+### Register Example
+
+```bash
+POST /api/auth/register
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "email": "user@example.com",
+  "password": "password123",
+  "password_confirmation": "password123"
+}
+```
+
+**Response (201 Created):**
+```json
+{
+  "user": {
+    "id": 1,
+    "name": "John Doe",
+    "email": "user@example.com",
+    "email_verified_at": null,
+    "created_at": "2024-01-01T00:00:00+00:00",
+    "updated_at": "2024-01-01T00:00:00+00:00"
+  },
+  "token": "1|abc123...",
+  "token_type": "Bearer"
+}
+```
+
 ### Login Example
 
-```php
-// POST /api/auth/login
+```bash
+POST /api/auth/login
+Content-Type: application/json
+
 {
   "email": "user@example.com",
   "password": "password123"
 }
+```
 
-// Response
+**Response (200 OK):**
+```json
 {
-  "token": "eyJ0eXAiOiJKV1QiLCJhbGc...",
   "user": {
     "id": 1,
     "name": "John Doe",
-    "email": "user@example.com"
-  }
+    "email": "user@example.com",
+    "email_verified_at": null,
+    "created_at": "2024-01-01T00:00:00+00:00",
+    "updated_at": "2024-01-01T00:00:00+00:00"
+  },
+  "token": "1|abc123...",
+  "token_type": "Bearer"
+}
+```
+
+**Error Response (401 Unauthorized):**
+```json
+{
+  "message": "Invalid credentials."
+}
+```
+
+**Error Response (404 Not Found - Domain Exception):**
+```json
+{
+  "message": "User with ID '999' not found."
+}
+```
+
+**Error Response (400 Bad Request - Domain Exception):**
+```json
+{
+  "message": "Invalid or expired token."
+}
+```
+
+### Forgot Password Example
+
+```bash
+POST /api/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "user@example.com"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "message": "If the email exists, a password reset link has been sent."
+}
+```
+
+### Reset Password Example
+
+```bash
+POST /api/auth/reset-password
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "token": "reset-token-from-email",
+  "password": "newpassword123",
+  "password_confirmation": "newpassword123"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "message": "Password has been reset successfully."
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "message": "Password has been reset successfully."
+}
+```
+
+**Error Response (400 Bad Request - Invalid Token):**
+```json
+{
+  "message": "Invalid or expired token."
+}
+```
+
+**Error Response (400 Bad Request - Generic):**
+```json
+{
+  "message": "Unable to reset password. Please check your token and try again."
 }
 ```
 
 ### Using Authentication Token
 
+```bash
+Authorization: Bearer 1|abc123...
+```
+
+Include the token in the Authorization header for protected endpoints.
+
+### Get Current User
+
+```bash
+GET /api/auth/me
+Authorization: Bearer 1|abc123...
+```
+
+**Response (200 OK):**
+```json
+{
+  "id": 1,
+  "name": "John Doe",
+  "email": "user@example.com",
+  "email_verified_at": null,
+  "roles": [
+    {
+      "id": 1,
+      "name": "User",
+      "slug": "user"
+    }
+  ],
+  "created_at": "2024-01-01T00:00:00+00:00",
+  "updated_at": "2024-01-01T00:00:00+00:00"
+}
+```
+
+## Roles and Permissions (RBAC)
+
+### List Roles
+
+```bash
+GET /api/roles
+Authorization: Bearer 1|abc123...
+```
+
+**Response (200 OK):**
+```json
+[
+  {
+    "id": 1,
+    "name": "Administrator",
+    "slug": "admin",
+    "description": "Full system access",
+    "created_at": "2024-01-01T00:00:00+00:00",
+    "updated_at": "2024-01-01T00:00:00+00:00"
+  }
+]
+```
+
+### Assign Role to User
+
+```bash
+POST /api/roles/assign-to-user
+Authorization: Bearer 1|abc123...
+Content-Type: application/json
+
+{
+  "user_id": 2,
+  "role_slug": "admin"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "message": "Role assigned successfully."
+}
+```
+
+**Error Response (404 Not Found - User):**
+```json
+{
+  "message": "User with ID '999' not found."
+}
+```
+
+**Error Response (404 Not Found - Role):**
+```json
+{
+  "message": "Role with slug 'invalid-role' not found."
+}
+```
+
+### Remove Role from User
+
+```bash
+POST /api/roles/remove-from-user
+Authorization: Bearer 1|abc123...
+Content-Type: application/json
+
+{
+  "user_id": 2,
+  "role_slug": "admin"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "message": "Role removed successfully."
+}
+```
+
+### Assign Permission to Role
+
+```bash
+POST /api/roles/assign-permission
+Authorization: Bearer 1|abc123...
+Content-Type: application/json
+
+{
+  "role_slug": "admin",
+  "permission_slug": "products.manage"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "message": "Permission assigned to role successfully."
+}
+```
+
+**Error Response (404 Not Found - Permission):**
+```json
+{
+  "message": "Permission with slug 'invalid.permission' not found."
+}
+```
+
+### Remove Permission from Role
+
+```bash
+POST /api/roles/remove-permission
+Authorization: Bearer 1|abc123...
+Content-Type: application/json
+
+{
+  "role_slug": "admin",
+  "permission_slug": "products.manage"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "message": "Permission removed from role successfully."
+}
+```
+
+### Using Middleware
+
+You can protect routes using role or permission middleware:
+
 ```php
-// Include token in Authorization header
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGc...
+Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
+    // Routes for admin only
+});
+
+Route::middleware(['auth:sanctum', 'permission:products.manage'])->group(function () {
+    // Routes requiring specific permission
+});
 ```
 
 ## API Requests

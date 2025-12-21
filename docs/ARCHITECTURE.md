@@ -1,10 +1,8 @@
 # Architecture
 
-> **Note**: This is a template file. Each service should document its specific architecture here.
-
 ## Overview
 
-This document describes the architecture of the microservice. Update this section with your service's specific architecture details.
+This document describes the architecture of the E-commerce API built with Laravel, following a **DDD Hybrid** (Hybrid Domain-Driven Design) pattern that combines DDD principles with Laravel's pragmatic structure.
 
 ## Directory Structure
 
@@ -13,43 +11,52 @@ The project follows a hybrid structure, combining Laravel's standard structure w
 ```
 app/
 ├── Domain/              # Domain Layer (Business Logic)
-│   ├── Entities/        # Domain Entities
+│   ├── Exceptions/      # Domain Exceptions
 │   ├── ValueObjects/    # Value Objects
 │   ├── Services/        # Domain Services
 │   ├── Repositories/    # Repository Interfaces
 │   └── Events/          # Domain Events
 │
 ├── Application/        # Application Layer (Use Cases)
-│   ├── DTOs/           # Data Transfer Objects
-│   ├── UseCases/       # Application Use Cases
-│   └── Services/       # Application Services
+│   ├── Services/       # Application Services
+│   └── UseCases/       # Application Use Cases
 │
 ├── Infrastructure/      # Infrastructure Layer (External Concerns)
 │   ├── Persistence/    # Repository Implementations
 │   └── Providers/      # Service Providers
 │
-├── Presentation/       # Presentation Layer (HTTP/API)
-│   └── Http/          # Controllers, Requests, Resources
-│
-├── Http/               # Laravel Standard Structure
+├── Http/               # Presentation Layer (HTTP/API)
 │   ├── Controllers/
 │   ├── Middleware/
 │   ├── Requests/
 │   └── Resources/
 │
-├── Models/            # Eloquent Models
-└── Services/          # Business Logic Services
+└── Models/            # Domain Entities (Eloquent Models)
 ```
 
 ## Design Patterns
 
-Document the design patterns used in this service:
-
 - **Repository Pattern**: Used for data access abstraction
-- **Service Layer**: Business logic encapsulation
-- **DTO Pattern**: Data transfer between layers
-- **Factory Pattern**: Object creation
-- **Observer Pattern**: Event handling
+- **Use Case Pattern**: Application layer orchestration
+- **Observer Pattern**: Event handling (Domain Events)
+- **DDD Hybrid**: Models as domain entities, Use Cases decoupled from infrastructure
+- **Dependency Inversion**: Use Cases depend only on Domain interfaces
+- **Exception Handling**: Global exception handler for Domain Exceptions
+
+> **Note:** For complete details about the DDD Hybrid pattern, see the project's architectural documentation.
+
+## Current Implementation Status
+
+### ✅ Implemented (Module 1)
+
+- **Authentication**: Register, Login, Password Reset
+- **RBAC**: Roles, Permissions, Middleware
+- **Email Notifications**: Welcome email, Password reset email
+- **Domain Exceptions**: 5 custom exceptions with global handler
+- **Time-based Protection**: Password reset has 5-minute interval between requests (implemented in Use Case)
+- **Repository Pattern**: All data access through repositories
+- **Use Cases**: 8 use cases for authentication and authorization
+- **Event-Driven**: Domain events for user registration and password reset
 
 ## Technology Stack
 
@@ -62,12 +69,32 @@ Document the design patterns used in this service:
 
 ## API Design
 
-Document your API design principles:
+### Principles
 
-- RESTful endpoints
-- Versioning strategy
-- Response formats
-- Error handling
+- **RESTful endpoints**: Following REST conventions
+- **JSON responses**: All responses in JSON format
+- **Status codes**: Proper HTTP status codes (200, 201, 400, 401, 404, 422, 500)
+- **Error handling**: Global exception handler for Domain Exceptions
+- **Time-based Protection**: Password reset has 5-minute interval between requests (prevents spam while allowing legitimate use)
+
+### Current Endpoints
+
+#### Authentication
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/login` - Authenticate user
+- `POST /api/auth/forgot-password` - Request password reset (rate limited)
+- `POST /api/auth/reset-password` - Reset password with token
+- `GET /api/auth/me` - Get authenticated user (protected)
+
+#### Roles & Permissions
+- `GET /api/roles` - List all roles (protected)
+- `POST /api/roles/assign-to-user` - Assign role to user (protected)
+- `POST /api/roles/remove-from-user` - Remove role from user (protected)
+- `POST /api/roles/assign-permission` - Assign permission to role (protected)
+- `POST /api/roles/remove-permission` - Remove permission from role (protected)
+
+#### Health Check
+- `GET /api/health` - API health status
 
 ## Database Schema
 
@@ -75,12 +102,30 @@ Document your database schema and relationships here.
 
 ## Security
 
-Document security measures:
+### Implemented Security Measures
 
-- Authentication flow
-- Authorization rules
-- Input validation
-- Rate limiting
+- **Authentication**: Laravel Sanctum (API tokens)
+- **Authorization**: RBAC with roles and permissions
+- **Input Validation**: Form Requests for all endpoints
+- **Time-based Protection**: Password reset has 5-minute interval between requests (prevents spam)
+- **Password Hashing**: Bcrypt via Laravel's Hash facade
+- **SQL Injection Protection**: Eloquent ORM with parameter binding
+- **XSS Protection**: Laravel's built-in protection
+- **CSRF Protection**: Enabled for web routes
+
+### Authentication Flow
+
+1. User registers → receives API token
+2. User logs in → receives API token
+3. Token included in `Authorization: Bearer {token}` header
+4. Protected routes require valid token via `auth:sanctum` middleware
+
+### Authorization Flow
+
+1. User has roles (e.g., admin, user, moderator)
+2. Roles have permissions (e.g., products.manage, orders.view)
+3. Middleware checks: `role:admin` or `permission:products.manage`
+4. Access granted/denied based on user's roles and permissions
 
 ## Performance Considerations
 

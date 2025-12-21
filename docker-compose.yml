@@ -147,6 +147,41 @@ services:
       php artisan queue:work redis --tries=3 --timeout=90
       "
 
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ecommerce-api-scheduler
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+      - vendor_data:/var/www/html/vendor
+    networks:
+      - ecommerce-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      app:
+        condition: service_started
+    command: >
+      sh -c "
+      git config --global --add safe.directory '*' 2>/dev/null || true &&
+      cd /var/www/html &&
+      if [ ! -f vendor/autoload.php ]; then
+        echo 'Installing Composer dependencies...' &&
+        composer update --no-interaction --prefer-dist --no-scripts --ignore-platform-reqs &&
+        composer dump-autoload --optimize --no-scripts &&
+        echo 'Dependencies installed!'
+      fi &&
+      while true; do
+        php artisan schedule:run --verbose --no-interaction &
+        sleep 60
+      done
+      "
+
 volumes:
   postgres_data:
     driver: local

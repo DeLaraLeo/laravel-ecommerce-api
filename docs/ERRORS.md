@@ -28,58 +28,184 @@ This document lists all error codes and their meanings for this microservice.
 - `500 Internal Server Error` - Unexpected server error
 - `503 Service Unavailable` - Service temporarily unavailable
 
-## Custom Error Codes
+## Domain Exceptions
 
-Document your custom error codes here:
+The project uses custom Domain Exceptions that are handled globally. All exceptions return JSON responses with appropriate HTTP status codes.
+
+### Implemented Domain Exceptions
+
+| Exception | HTTP Status | Description |
+|-----------|-------------|-------------|
+| `UserNotFoundException` | 404 | User not found by ID or email |
+| `RoleNotFoundException` | 404 | Role not found by slug or ID |
+| `PermissionNotFoundException` | 404 | Permission not found by slug or ID |
+| `InvalidTokenException` | 400 | Invalid or malformed token |
+| `TokenExpiredException` | 400 | Token has expired |
+
+### Exception Examples
+
+#### UserNotFoundException
+
+**When thrown:**
+- User not found by ID in `AssignRoleToUserUseCase`
+- User not found by email in authentication flows
+
+**Response (404):**
+```json
+{
+  "message": "User with ID '123' not found."
+}
+```
+
+#### RoleNotFoundException
+
+**When thrown:**
+- Role not found by slug when assigning to user
+- Role not found when assigning permissions
+
+**Response (404):**
+```json
+{
+  "message": "Role with slug 'admin' not found."
+}
+```
+
+#### PermissionNotFoundException
+
+**When thrown:**
+- Permission not found by slug when assigning to role
+
+**Response (404):**
+```json
+{
+  "message": "Permission with slug 'products.manage' not found."
+}
+```
+
+#### InvalidTokenException
+
+**When thrown:**
+- Password reset token is invalid or malformed
+
+**Response (400):**
+```json
+{
+  "message": "Invalid or expired token."
+}
+```
+
+#### TokenExpiredException
+
+**When thrown:**
+- Password reset token has expired
+
+**Response (400):**
+```json
+{
+  "message": "Token has expired."
+}
+```
 
 ### Authentication Errors
 
-| Code | Message | Description |
-|------|---------|-------------|
-| `AUTH_001` | Invalid credentials | Email or password incorrect |
-| `AUTH_002` | Token expired | JWT token has expired |
-| `AUTH_003` | Token invalid | JWT token is invalid |
+| HTTP Status | Message | Description |
+|-------------|---------|-------------|
+| `401` | Invalid credentials | Email or password incorrect |
+| `401` | Unauthenticated | Token missing or invalid |
 
 ### Validation Errors
 
-| Code | Message | Description |
-|------|---------|-------------|
-| `VAL_001` | Required field missing | A required field was not provided |
-| `VAL_002` | Invalid format | Field format is invalid |
-| `VAL_003` | Value out of range | Field value is outside allowed range |
+| HTTP Status | Format | Description |
+|-------------|--------|-------------|
+| `422` | Laravel validation errors | Form Request validation failed |
 
-### Business Logic Errors
-
-| Code | Message | Description |
-|------|---------|-------------|
-| `BIZ_001` | Resource not found | Requested resource does not exist |
-| `BIZ_002` | Operation not allowed | Operation is not permitted |
-| `BIZ_003` | Conflict | Resource conflict detected |
+**Example (422):**
+```json
+{
+  "message": "The given data was invalid.",
+  "errors": {
+    "email": ["The email field is required."],
+    "password": ["The password must be at least 8 characters."]
+  }
+}
+```
 
 ## Error Response Format
 
-All errors follow this format:
+### Domain Exceptions (404, 400)
+
+Domain exceptions return a simple message format:
 
 ```json
 {
-  "error": {
-    "code": "AUTH_001",
-    "message": "Invalid credentials",
-    "details": {
-      "field": "email",
-      "reason": "Email not found"
-    }
+  "message": "User with ID '123' not found."
+}
+```
+
+### Validation Errors (422)
+
+Validation errors follow Laravel's standard format:
+
+```json
+{
+  "message": "The given data was invalid.",
+  "errors": {
+    "email": ["The email field is required."],
+    "password": ["The password must be at least 8 characters."]
   }
+}
+```
+
+### Authentication Errors (401)
+
+```json
+{
+  "message": "Invalid credentials."
+}
+```
+
+or
+
+```json
+{
+  "message": "Unauthenticated."
 }
 ```
 
 ## Handling Errors
 
-Document how to handle errors in your service:
+### Global Exception Handler
+
+All Domain Exceptions are handled globally in `bootstrap/app.php`:
+
+```php
+->withExceptions(function (Exceptions $exceptions): void {
+    $exceptions->render(function (UserNotFoundException $e, $request) {
+        if ($request->is('api/*')) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 404);
+        }
+    });
+    // ... other exceptions
+})
+```
+
+### Error Handling Guidelines
 
 1. **Client Errors (4xx)**: Fix the request and retry
+   - 400: Bad Request - Check request format
+   - 401: Unauthorized - Provide valid authentication token
+   - 404: Not Found - Resource doesn't exist
+   - 422: Validation Error - Fix validation errors and retry
+
 2. **Server Errors (5xx)**: Retry with exponential backoff
-3. **Rate Limiting (429)**: Wait for the specified retry-after period
+   - 500: Internal Server Error - Server-side issue, retry later
+
+3. **Time-based Protection**: Password reset has 5-minute interval between requests
+   - Implemented in `RequestPasswordResetUseCase`
+   - Prevents spam while allowing legitimate use
+   - Returns success message even when rate-limited (prevents email enumeration)
 
 ## Logging
 

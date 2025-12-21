@@ -60,4 +60,10 @@ docker-compose exec app php artisan test
 
 # Access container shell
 docker-compose exec app bash
+
+# Run scheduled command manually
+docker-compose exec app php artisan tokens:clean-expired
+
+# View scheduler logs
+docker-compose logs -f scheduler
 ```
