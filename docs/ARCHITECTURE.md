@@ -70,6 +70,19 @@ app/
 - **Eager Loading**: Optimized queries to prevent N+1 problems
 - **Factories & Seeders**: ProductFactory, CategoryFactory, and seeders for test data
 
+### ✅ Implemented (Module 3)
+
+- **Cart**: Full shopping cart management (add, remove, clear, get)
+- **Cart Items**: Automatic quantity updates when adding same product
+- **Stock Validation**: Prevents adding more items than available stock
+- **Price Snapshot**: Stores product price at time of addition (price_at_time)
+- **Total Calculation**: Automatic cart total calculation
+- **Domain Exceptions**: CartNotFoundException, CartItemNotFoundException, InsufficientStockException
+- **Domain Service**: CartService for complex business logic
+- **Use Cases**: 4 use cases for cart operations
+- **One Cart Per User**: Automatic cart creation and retrieval
+- **Factories**: CartFactory, CartItemFactory for testing
+
 ## Technology Stack
 
 - **Framework**: Laravel 12.x
@@ -118,6 +131,12 @@ app/
 - `POST /api/categories` - Create category (protected)
 - `PUT /api/categories/{id}` - Update category (protected)
 - `DELETE /api/categories/{id}` - Delete category (protected)
+
+#### Cart
+- `GET /api/cart` - Get user's shopping cart (protected)
+- `POST /api/cart/add` - Add product to cart (protected)
+- `DELETE /api/cart/items/{id}` - Remove item from cart (protected)
+- `POST /api/cart/clear` - Clear all items from cart (protected)
 
 #### Health Check
 - `GET /api/health` - API health status

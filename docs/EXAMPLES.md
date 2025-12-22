@@ -860,6 +860,145 @@ class StoreUserRequest extends FormRequest
 }
 ```
 
+## Cart
+
+### Get Cart
+
+```bash
+GET /api/cart
+Authorization: Bearer 1|abc123...
+```
+
+**Response (200 OK):**
+```json
+{
+  "id": 1,
+  "user_id": 1,
+  "items": [
+    {
+      "id": 1,
+      "quantity": 2,
+      "price_at_time": 99.99,
+      "subtotal": 199.98,
+      "product": {
+        "id": 1,
+        "name": "Laptop",
+        "slug": "laptop",
+        "price": 99.99,
+        "stock": 10,
+        "category": {
+          "id": 1,
+          "name": "Electronics",
+          "slug": "electronics"
+        }
+      },
+      "created_at": "2024-01-01T00:00:00+00:00",
+      "updated_at": "2024-01-01T00:00:00+00:00"
+    }
+  ],
+  "total": 199.98,
+  "items_count": 1,
+  "created_at": "2024-01-01T00:00:00+00:00",
+  "updated_at": "2024-01-01T00:00:00+00:00"
+}
+```
+
+### Add to Cart
+
+```bash
+POST /api/cart/add
+Authorization: Bearer 1|abc123...
+Content-Type: application/json
+
+{
+  "product_id": 1,
+  "quantity": 2
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "id": 1,
+  "user_id": 1,
+  "items": [
+    {
+      "id": 1,
+      "quantity": 2,
+      "price_at_time": 99.99,
+      "subtotal": 199.98,
+      "product": {
+        "id": 1,
+        "name": "Laptop",
+        "price": 99.99
+      }
+    }
+  ],
+  "total": 199.98
+}
+```
+
+**Error Response (422 Unprocessable Entity - Insufficient Stock):**
+```json
+{
+  "message": "Insufficient stock. Requested: 11, Available: 10."
+}
+```
+
+**Error Response (422 Unprocessable Entity - Validation):**
+```json
+{
+  "message": "The given data was invalid.",
+  "errors": {
+    "product_id": ["The selected product does not exist."],
+    "quantity": ["The quantity must be at least 1."]
+  }
+}
+```
+
+### Remove from Cart
+
+```bash
+DELETE /api/cart/items/1
+Authorization: Bearer 1|abc123...
+```
+
+**Response (200 OK):**
+```json
+{
+  "id": 1,
+  "user_id": 1,
+  "items": [],
+  "total": 0,
+  "items_count": 0
+}
+```
+
+**Error Response (422 Unprocessable Entity):**
+```json
+{
+  "message": "Cart item with ID '999' not found."
+}
+```
+
+### Clear Cart
+
+```bash
+POST /api/cart/clear
+Authorization: Bearer 1|abc123...
+```
+
+**Response (200 OK):**
+```json
+{
+  "id": 1,
+  "user_id": 1,
+  "items": [],
+  "total": 0,
+  "items_count": 0
+}
+```
+
 ## Testing
 
 ### Feature Test Example

@@ -39,6 +39,11 @@ The project uses custom Domain Exceptions that are handled globally. All excepti
 | `UserNotFoundException` | 404 | User not found by ID or email |
 | `RoleNotFoundException` | 404 | Role not found by slug or ID |
 | `PermissionNotFoundException` | 404 | Permission not found by slug or ID |
+| `ProductNotFoundException` | 404 | Product not found by ID or slug |
+| `CategoryNotFoundException` | 404 | Category not found by ID |
+| `CartNotFoundException` | 404 | Cart not found by ID or user ID |
+| `CartItemNotFoundException` | 422 | Cart item not found by ID |
+| `InsufficientStockException` | 422 | Requested quantity exceeds available stock |
 | `InvalidTokenException` | 400 | Invalid or malformed token |
 | `TokenExpiredException` | 400 | Token has expired |
 
@@ -103,6 +108,69 @@ The project uses custom Domain Exceptions that are handled globally. All excepti
 ```json
 {
   "message": "Token has expired."
+}
+```
+
+#### ProductNotFoundException
+
+**When thrown:**
+- Product not found by ID when fetching or updating
+- Product not found by slug
+
+**Response (404):**
+```json
+{
+  "message": "Product with ID '123' not found."
+}
+```
+
+#### CategoryNotFoundException
+
+**When thrown:**
+- Category not found by ID when creating or updating products
+
+**Response (404):**
+```json
+{
+  "message": "Category with ID '123' not found."
+}
+```
+
+#### CartNotFoundException
+
+**When thrown:**
+- Cart not found by ID or user ID
+
+**Response (404):**
+```json
+{
+  "message": "Cart for user ID '123' not found."
+}
+```
+
+#### CartItemNotFoundException
+
+**When thrown:**
+- Cart item not found by ID when trying to remove
+- Cart item does not belong to user's cart
+
+**Response (422):**
+```json
+{
+  "message": "Cart item with ID '123' not found."
+}
+```
+
+#### InsufficientStockException
+
+**When thrown:**
+- User tries to add more items to cart than available in stock
+- Total quantity in cart would exceed product stock
+
+**Response (422):**
+```json
+{
+  "message": "Insufficient stock. Requested: 11, Available: 10."
 }
 ```
 

@@ -1,7 +1,12 @@
 <?php
 
+use App\Domain\Exceptions\CartItemNotFoundException;
+use App\Domain\Exceptions\CartNotFoundException;
+use App\Domain\Exceptions\CategoryNotFoundException;
+use App\Domain\Exceptions\InsufficientStockException;
 use App\Domain\Exceptions\InvalidTokenException;
 use App\Domain\Exceptions\PermissionNotFoundException;
+use App\Domain\Exceptions\ProductNotFoundException;
 use App\Domain\Exceptions\RoleNotFoundException;
 use App\Domain\Exceptions\TokenExpiredException;
 use App\Domain\Exceptions\UserNotFoundException;
@@ -61,6 +66,46 @@ return Application::configure(basePath: dirname(__DIR__))
                 return response()->json([
                     'message' => $e->getMessage(),
                 ], 400);
+            }
+        });
+
+        $exceptions->render(function (ProductNotFoundException $e, $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'message' => $e->getMessage(),
+                ], 404);
+            }
+        });
+
+        $exceptions->render(function (CategoryNotFoundException $e, $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'message' => $e->getMessage(),
+                ], 404);
+            }
+        });
+
+        $exceptions->render(function (CartNotFoundException $e, $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'message' => $e->getMessage(),
+                ], 404);
+            }
+        });
+
+        $exceptions->render(function (CartItemNotFoundException $e, $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'message' => $e->getMessage(),
+                ], 422);
+            }
+        });
+
+        $exceptions->render(function (InsufficientStockException $e, $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'message' => $e->getMessage(),
+                ], 422);
             }
         });
     })->create();
