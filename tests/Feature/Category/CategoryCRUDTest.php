@@ -53,20 +53,16 @@ class CategoryCRUDTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonStructure([
-                'data' => [
-                    'id',
-                    'name',
-                    'slug',
-                    'description',
-                    'created_at',
-                    'updated_at',
-                ],
+                'id',
+                'name',
+                'slug',
+                'description',
+                'created_at',
+                'updated_at',
             ])
             ->assertJson([
-                'data' => [
-                    'id' => $category->id,
-                    'name' => $category->name,
-                ],
+                'id' => $category->id,
+                'name' => $category->name,
             ]);
     }
 
@@ -84,11 +80,9 @@ class CategoryCRUDTest extends TestCase
 
         $response->assertStatus(201)
             ->assertJsonStructure([
-                'data' => [
-                    'id',
-                    'name',
-                    'slug',
-                ],
+                'id',
+                'name',
+                'slug',
             ]);
 
         $this->assertDatabaseHas('categories', [
@@ -133,10 +127,8 @@ class CategoryCRUDTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson([
-                'data' => [
-                    'id' => $category->id,
-                    'name' => 'Updated Category',
-                ],
+                'id' => $category->id,
+                'name' => 'Updated Category',
             ]);
 
         $this->assertDatabaseHas('categories', [

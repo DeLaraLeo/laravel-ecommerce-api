@@ -59,22 +59,18 @@ class ProductCRUDTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonStructure([
-                'data' => [
-                    'id',
-                    'name',
-                    'slug',
-                    'description',
-                    'price',
-                    'stock',
-                    'created_at',
-                    'updated_at',
-                ],
+                'id',
+                'name',
+                'slug',
+                'description',
+                'price',
+                'stock',
+                'created_at',
+                'updated_at',
             ])
             ->assertJson([
-                'data' => [
-                    'id' => $product->id,
-                    'name' => $product->name,
-                ],
+                'id' => $product->id,
+                'name' => $product->name,
             ]);
     }
 
@@ -95,13 +91,11 @@ class ProductCRUDTest extends TestCase
 
         $response->assertStatus(201)
             ->assertJsonStructure([
-                'data' => [
-                    'id',
-                    'name',
-                    'slug',
-                    'price',
-                    'stock',
-                ],
+                'id',
+                'name',
+                'slug',
+                'price',
+                'stock',
             ]);
 
         $this->assertDatabaseHas('products', [
@@ -125,10 +119,8 @@ class ProductCRUDTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson([
-                'data' => [
-                    'id' => $product->id,
-                    'name' => 'Updated Product',
-                ],
+                'id' => $product->id,
+                'name' => 'Updated Product',
             ]);
 
         $this->assertDatabaseHas('products', [
