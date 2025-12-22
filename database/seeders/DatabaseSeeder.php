@@ -16,15 +16,20 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RoleSeeder::class,
             PermissionSeeder::class,
+            CategorySeeder::class,
+            ProductSeeder::class,
         ]);
 
-        $user = User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        $user = User::firstOrCreate(
+            ['email' => 'test@example.com'],
+            [
+                'name' => 'Test User',
+                'password' => \Illuminate\Support\Facades\Hash::make('password'),
+            ]
+        );
 
         $adminRole = Role::where('slug', 'admin')->first();
-        if ($adminRole) {
+        if ($adminRole && !$user->roles()->where('roles.id', $adminRole->id)->exists()) {
             $user->roles()->attach($adminRole->id);
         }
     }

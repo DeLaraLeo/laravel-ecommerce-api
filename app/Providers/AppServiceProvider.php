@@ -2,7 +2,11 @@
 
 namespace App\Providers;
 
+use App\Domain\Repositories\CategoryRepositoryInterface;
+use App\Domain\Repositories\ProductRepositoryInterface;
 use App\Domain\Repositories\UserRepositoryInterface;
+use App\Infrastructure\Persistence\EloquentCategoryRepository;
+use App\Infrastructure\Persistence\EloquentProductRepository;
 use App\Infrastructure\Persistence\EloquentUserRepository;
 use Illuminate\Support\ServiceProvider;
 
@@ -31,6 +35,16 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             \App\Domain\Repositories\PermissionRepositoryInterface::class,
             \App\Infrastructure\Persistence\EloquentPermissionRepository::class
+        );
+
+        $this->app->bind(
+            ProductRepositoryInterface::class,
+            EloquentProductRepository::class
+        );
+
+        $this->app->bind(
+            CategoryRepositoryInterface::class,
+            EloquentCategoryRepository::class
         );
     }
 

@@ -58,6 +58,18 @@ app/
 - **Use Cases**: 8 use cases for authentication and authorization
 - **Event-Driven**: Domain events for user registration and password reset
 
+### ✅ Implemented (Module 2)
+
+- **Products**: Full CRUD with advanced filtering, pagination, and sorting
+- **Categories**: Full CRUD with parent-child relationships
+- **Filtering**: By category, price range, and text search
+- **Pagination**: Configurable per_page and page parameters
+- **Sorting**: Multiple fields with ascending/descending support
+- **Domain Exceptions**: ProductNotFoundException, CategoryNotFoundException
+- **Use Cases**: 9 use cases for products and categories
+- **Eager Loading**: Optimized queries to prevent N+1 problems
+- **Factories & Seeders**: ProductFactory, CategoryFactory, and seeders for test data
+
 ## Technology Stack
 
 - **Framework**: Laravel 12.x
@@ -92,6 +104,20 @@ app/
 - `POST /api/roles/remove-from-user` - Remove role from user (protected)
 - `POST /api/roles/assign-permission` - Assign permission to role (protected)
 - `POST /api/roles/remove-permission` - Remove permission from role (protected)
+
+#### Products
+- `GET /api/products` - List products with filters (public)
+- `GET /api/products/{id}` - Get product by ID (public)
+- `POST /api/products` - Create product (protected)
+- `PUT /api/products/{id}` - Update product (protected)
+- `DELETE /api/products/{id}` - Delete product (protected)
+
+#### Categories
+- `GET /api/categories` - List all categories (public)
+- `GET /api/categories/{id}` - Get category by ID (public)
+- `POST /api/categories` - Create category (protected)
+- `PUT /api/categories/{id}` - Update category (protected)
+- `DELETE /api/categories/{id}` - Delete category (protected)
 
 #### Health Check
 - `GET /api/health` - API health status

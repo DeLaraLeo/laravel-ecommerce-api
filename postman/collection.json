@@ -382,6 +382,345 @@
 				}
 			],
 			"description": "Role-Based Access Control (RBAC) endpoints"
+		},
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "List Products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products?category=1&min_price=10&max_price=100&search=phone&page=1&per_page=15&sort=-price,name",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"products"
+							],
+							"query": [
+								{
+									"key": "category",
+									"value": "1",
+									"description": "Filter by category ID"
+								},
+								{
+									"key": "min_price",
+									"value": "10",
+									"description": "Minimum price"
+								},
+								{
+									"key": "max_price",
+									"value": "100",
+									"description": "Maximum price"
+								},
+								{
+									"key": "search",
+									"value": "phone",
+									"description": "Search in name and description"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number"
+								},
+								{
+									"key": "per_page",
+									"value": "15",
+									"description": "Items per page"
+								},
+								{
+									"key": "sort",
+									"value": "-price,name",
+									"description": "Sort fields (- for descending)"
+								}
+							]
+						},
+						"description": "List products with optional filters, pagination and sorting"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Product",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"1"
+							]
+						},
+						"description": "Get a product by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Product",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Laptop\",\n    \"slug\": \"laptop\",\n    \"description\": \"High-performance laptop\",\n    \"price\": 1299.99,\n    \"stock\": 5,\n    \"category_id\": 1,\n    \"image_url\": \"https://example.com/laptop.jpg\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/products",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"products"
+							]
+						},
+						"description": "Create a new product (requires authentication)"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Product",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated Laptop\",\n    \"price\": 1399.99,\n    \"stock\": 10\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/products/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"1"
+							]
+						},
+						"description": "Update a product (requires authentication)"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Product",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/products/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"1"
+							]
+						},
+						"description": "Delete a product (requires authentication)"
+					},
+					"response": []
+				}
+			],
+			"description": "Product management endpoints"
+		},
+		{
+			"name": "Categories",
+			"item": [
+				{
+					"name": "List Categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/categories",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"categories"
+							]
+						},
+						"description": "List all categories"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Category",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/categories/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"categories",
+								"1"
+							]
+						},
+						"description": "Get a category by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Category",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Clothing\",\n    \"slug\": \"clothing\",\n    \"description\": \"Apparel and fashion items\",\n    \"parent_id\": null\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/categories",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"categories"
+							]
+						},
+						"description": "Create a new category (requires authentication)"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Subcategory",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"T-Shirts\",\n    \"slug\": \"t-shirts\",\n    \"description\": \"T-shirts and casual wear\",\n    \"parent_id\": 3\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/categories",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"categories"
+							]
+						},
+						"description": "Create a subcategory (requires authentication)"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Category",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated Electronics\",\n    \"description\": \"Updated description\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/categories/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"categories",
+								"1"
+							]
+						},
+						"description": "Update a category (requires authentication)"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Category",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/categories/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"categories",
+								"1"
+							]
+						},
+						"description": "Delete a category (requires authentication)"
+					},
+					"response": []
+				}
+			],
+			"description": "Category management endpoints"
 		}
 	],
 	"event": [

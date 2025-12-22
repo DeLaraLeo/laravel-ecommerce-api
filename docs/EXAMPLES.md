@@ -305,6 +305,363 @@ Content-Type: application/json
 }
 ```
 
+---
+
+## Products
+
+### List Products Example
+
+```bash
+GET /api/products?category=1&min_price=10&max_price=100&search=phone&page=1&per_page=15&sort=-price,name
+```
+
+**Response (200 OK):**
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "Smartphone",
+      "slug": "smartphone",
+      "description": "Latest smartphone model",
+      "price": 599.99,
+      "stock": 10,
+      "image_url": "https://example.com/image.jpg",
+      "category": {
+        "id": 1,
+        "name": "Electronics",
+        "slug": "electronics"
+      },
+      "created_at": "2024-01-01T00:00:00+00:00",
+      "updated_at": "2024-01-01T00:00:00+00:00"
+    }
+  ],
+  "links": {
+    "first": "http://localhost/api/products?page=1",
+    "last": "http://localhost/api/products?page=10",
+    "prev": null,
+    "next": "http://localhost/api/products?page=2"
+  },
+  "meta": {
+    "current_page": 1,
+    "per_page": 15,
+    "total": 100
+  }
+}
+```
+
+### Get Product Example
+
+```bash
+GET /api/products/1
+```
+
+**Response (200 OK):**
+```json
+{
+  "data": {
+    "id": 1,
+    "name": "Smartphone",
+    "slug": "smartphone",
+    "description": "Latest smartphone model",
+    "price": 599.99,
+    "stock": 10,
+    "image_url": "https://example.com/image.jpg",
+    "category": {
+      "id": 1,
+      "name": "Electronics",
+      "slug": "electronics"
+    },
+    "created_at": "2024-01-01T00:00:00+00:00",
+    "updated_at": "2024-01-01T00:00:00+00:00"
+  }
+}
+```
+
+### Create Product Example
+
+```bash
+POST /api/products
+Authorization: Bearer 1|abc123...
+Content-Type: application/json
+
+{
+  "name": "Laptop",
+  "slug": "laptop",
+  "description": "High-performance laptop",
+  "price": 1299.99,
+  "stock": 5,
+  "category_id": 1,
+  "image_url": "https://example.com/laptop.jpg"
+}
+```
+
+**Response (201 Created):**
+```json
+{
+  "data": {
+    "id": 2,
+    "name": "Laptop",
+    "slug": "laptop",
+    "description": "High-performance laptop",
+    "price": 1299.99,
+    "stock": 5,
+    "image_url": "https://example.com/laptop.jpg",
+    "category": {
+      "id": 1,
+      "name": "Electronics",
+      "slug": "electronics"
+    },
+    "created_at": "2024-01-01T00:00:00+00:00",
+    "updated_at": "2024-01-01T00:00:00+00:00"
+  }
+}
+```
+
+**Error Response (422 Validation Error):**
+```json
+{
+  "message": "The given data was invalid.",
+  "errors": {
+    "name": ["The name field is required."],
+    "price": ["The price must be at least 0."],
+    "category_id": ["The selected category does not exist."]
+  }
+}
+```
+
+**Error Response (404 Not Found - Category):**
+```json
+{
+  "message": "Category with ID '999' not found."
+}
+```
+
+### Update Product Example
+
+```bash
+PUT /api/products/1
+Authorization: Bearer 1|abc123...
+Content-Type: application/json
+
+{
+  "name": "Updated Smartphone",
+  "price": 699.99,
+  "stock": 15
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "data": {
+    "id": 1,
+    "name": "Updated Smartphone",
+    "slug": "smartphone",
+    "price": 699.99,
+    "stock": 15,
+    "created_at": "2024-01-01T00:00:00+00:00",
+    "updated_at": "2024-01-01T01:00:00+00:00"
+  }
+}
+```
+
+### Delete Product Example
+
+```bash
+DELETE /api/products/1
+Authorization: Bearer 1|abc123...
+```
+
+**Response (200 OK):**
+```json
+{
+  "message": "Product deleted successfully."
+}
+```
+
+**Error Response (404 Not Found):**
+```json
+{
+  "message": "Product with ID '999' not found."
+}
+```
+
+---
+
+## Categories
+
+### List Categories Example
+
+```bash
+GET /api/categories
+```
+
+**Response (200 OK):**
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "Electronics",
+      "slug": "electronics",
+      "description": "Electronic devices and gadgets",
+      "parent_id": null,
+      "created_at": "2024-01-01T00:00:00+00:00",
+      "updated_at": "2024-01-01T00:00:00+00:00"
+    },
+    {
+      "id": 2,
+      "name": "Smartphones",
+      "slug": "smartphones",
+      "description": "Mobile phones and smartphones",
+      "parent_id": 1,
+      "parent": {
+        "id": 1,
+        "name": "Electronics",
+        "slug": "electronics"
+      },
+      "created_at": "2024-01-01T00:00:00+00:00",
+      "updated_at": "2024-01-01T00:00:00+00:00"
+    }
+  ]
+}
+```
+
+### Get Category Example
+
+```bash
+GET /api/categories/1
+```
+
+**Response (200 OK):**
+```json
+{
+  "data": {
+    "id": 1,
+    "name": "Electronics",
+    "slug": "electronics",
+    "description": "Electronic devices and gadgets",
+    "parent_id": null,
+    "created_at": "2024-01-01T00:00:00+00:00",
+    "updated_at": "2024-01-01T00:00:00+00:00"
+  }
+}
+```
+
+### Create Category Example
+
+```bash
+POST /api/categories
+Authorization: Bearer 1|abc123...
+Content-Type: application/json
+
+{
+  "name": "Clothing",
+  "slug": "clothing",
+  "description": "Apparel and fashion items",
+  "parent_id": null
+}
+```
+
+**Response (201 Created):**
+```json
+{
+  "data": {
+    "id": 3,
+    "name": "Clothing",
+    "slug": "clothing",
+    "description": "Apparel and fashion items",
+    "parent_id": null,
+    "created_at": "2024-01-01T00:00:00+00:00",
+    "updated_at": "2024-01-01T00:00:00+00:00"
+  }
+}
+```
+
+### Create Subcategory Example
+
+```bash
+POST /api/categories
+Authorization: Bearer 1|abc123...
+Content-Type: application/json
+
+{
+  "name": "T-Shirts",
+  "slug": "t-shirts",
+  "description": "T-shirts and casual wear",
+  "parent_id": 3
+}
+```
+
+**Response (201 Created):**
+```json
+{
+  "data": {
+    "id": 4,
+    "name": "T-Shirts",
+    "slug": "t-shirts",
+    "description": "T-shirts and casual wear",
+    "parent_id": 3,
+    "parent": {
+      "id": 3,
+      "name": "Clothing",
+      "slug": "clothing"
+    },
+    "created_at": "2024-01-01T00:00:00+00:00",
+    "updated_at": "2024-01-01T00:00:00+00:00"
+  }
+}
+```
+
+### Update Category Example
+
+```bash
+PUT /api/categories/1
+Authorization: Bearer 1|abc123...
+Content-Type: application/json
+
+{
+  "name": "Updated Electronics",
+  "description": "Updated description"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "data": {
+    "id": 1,
+    "name": "Updated Electronics",
+    "slug": "electronics",
+    "description": "Updated description",
+    "created_at": "2024-01-01T00:00:00+00:00",
+    "updated_at": "2024-01-01T01:00:00+00:00"
+  }
+}
+```
+
+### Delete Category Example
+
+```bash
+DELETE /api/categories/1
+Authorization: Bearer 1|abc123...
+```
+
+**Response (200 OK):**
+```json
+{
+  "message": "Category deleted successfully."
+}
+```
+
+**Error Response (404 Not Found):**
+```json
+{
+  "message": "Category with ID '999' not found."
+}
+```
+
 ### Using Middleware
 
 You can protect routes using role or permission middleware:
