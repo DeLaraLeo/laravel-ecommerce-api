@@ -999,6 +999,230 @@ Authorization: Bearer 1|abc123...
 }
 ```
 
+## Orders
+
+### Create Order Example
+
+```bash
+POST /api/orders
+Authorization: Bearer 1|abc123...
+```
+
+**Response (201 Created):**
+```json
+{
+  "id": 1,
+  "user_id": 1,
+  "status": "pending",
+  "total": 199.98,
+  "items": [
+    {
+      "id": 1,
+      "order_id": 1,
+      "product_id": 1,
+      "quantity": 2,
+      "price_at_time": 99.99,
+      "subtotal": 199.98,
+      "product": {
+        "id": 1,
+        "name": "Laptop",
+        "slug": "laptop"
+      }
+    }
+  ],
+  "created_at": "2024-01-01T00:00:00+00:00",
+  "updated_at": "2024-01-01T00:00:00+00:00"
+}
+```
+
+**Error Response (422 Unprocessable Entity - Empty Cart):**
+```json
+{
+  "message": "The given data was invalid.",
+  "errors": {
+    "cart": ["Cart is empty."]
+  }
+}
+```
+
+### List Orders Example
+
+```bash
+GET /api/orders
+Authorization: Bearer 1|abc123...
+```
+
+**Response (200 OK):**
+```json
+[
+  {
+    "id": 1,
+    "user_id": 1,
+    "status": "pending",
+    "total": 199.98,
+    "created_at": "2024-01-01T00:00:00+00:00",
+    "updated_at": "2024-01-01T00:00:00+00:00"
+  }
+]
+```
+
+### Get Order Example
+
+```bash
+GET /api/orders/1
+Authorization: Bearer 1|abc123...
+```
+
+**Response (200 OK):**
+```json
+{
+  "id": 1,
+  "user_id": 1,
+  "status": "pending",
+  "total": 199.98,
+  "items": [
+    {
+      "id": 1,
+      "order_id": 1,
+      "product_id": 1,
+      "quantity": 2,
+      "price_at_time": 99.99,
+      "subtotal": 199.98
+    }
+  ],
+  "payment": null,
+  "created_at": "2024-01-01T00:00:00+00:00",
+  "updated_at": "2024-01-01T00:00:00+00:00"
+}
+```
+
+### Update Order Status Example
+
+```bash
+PATCH /api/orders/1/status
+Authorization: Bearer 1|abc123...
+Content-Type: application/json
+
+{
+  "status": "processing"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "id": 1,
+  "user_id": 1,
+  "status": "processing",
+  "total": 199.98,
+  "created_at": "2024-01-01T00:00:00+00:00",
+  "updated_at": "2024-01-01T01:00:00+00:00"
+}
+```
+
+### Cancel Order Example
+
+```bash
+DELETE /api/orders/1
+Authorization: Bearer 1|abc123...
+```
+
+**Response (200 OK):**
+```json
+{
+  "id": 1,
+  "user_id": 1,
+  "status": "cancelled",
+  "total": 199.98,
+  "created_at": "2024-01-01T00:00:00+00:00",
+  "updated_at": "2024-01-01T01:00:00+00:00"
+}
+```
+
+**Error Response (422 Unprocessable Entity - Cannot Cancel):**
+```json
+{
+  "message": "The given data was invalid.",
+  "errors": {
+    "order": ["Cannot cancel order that has been delivered or refunded."]
+  }
+}
+```
+
+## Payments
+
+### Process Payment Example
+
+```bash
+POST /api/orders/1/payment
+Authorization: Bearer 1|abc123...
+Content-Type: application/json
+
+{
+  "amount": 199.98,
+  "payment_method": "credit_card"
+}
+```
+
+**Response (201 Created):**
+```json
+{
+  "id": 1,
+  "order_id": 1,
+  "amount": 199.98,
+  "status": "paid",
+  "payment_method": "credit_card",
+  "transaction_id": "mock_abc123",
+  "created_at": "2024-01-01T00:00:00+00:00",
+  "updated_at": "2024-01-01T00:00:00+00:00"
+}
+```
+
+**Error Response (422 Unprocessable Entity - Wrong Amount):**
+```json
+{
+  "message": "The given data was invalid.",
+  "errors": {
+    "amount": ["Payment amount does not match order total."]
+  }
+}
+```
+
+**Error Response (422 Unprocessable Entity - Already Paid):**
+```json
+{
+  "message": "Order with ID '1' has already been paid."
+}
+```
+
+### Get Payment Example
+
+```bash
+GET /api/orders/1/payment
+Authorization: Bearer 1|abc123...
+```
+
+**Response (200 OK):**
+```json
+{
+  "id": 1,
+  "order_id": 1,
+  "amount": 199.98,
+  "status": "paid",
+  "payment_method": "credit_card",
+  "transaction_id": "mock_abc123",
+  "created_at": "2024-01-01T00:00:00+00:00",
+  "updated_at": "2024-01-01T00:00:00+00:00"
+}
+```
+
+**Error Response (404 Not Found):**
+```json
+{
+  "message": "Payment not found for order with ID '1'."
+}
+```
+
 ## Testing
 
 ### Feature Test Example

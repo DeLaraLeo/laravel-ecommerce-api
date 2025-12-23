@@ -3,8 +3,12 @@
 use App\Domain\Exceptions\CartItemNotFoundException;
 use App\Domain\Exceptions\CartNotFoundException;
 use App\Domain\Exceptions\CategoryNotFoundException;
+use App\Domain\Exceptions\EmptyCartException;
 use App\Domain\Exceptions\InsufficientStockException;
 use App\Domain\Exceptions\InvalidTokenException;
+use App\Domain\Exceptions\OrderAlreadyPaidException;
+use App\Domain\Exceptions\OrderNotFoundException;
+use App\Domain\Exceptions\PaymentNotFoundException;
 use App\Domain\Exceptions\PermissionNotFoundException;
 use App\Domain\Exceptions\ProductNotFoundException;
 use App\Domain\Exceptions\RoleNotFoundException;
@@ -102,6 +106,38 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
         $exceptions->render(function (InsufficientStockException $e, $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'message' => $e->getMessage(),
+                ], 422);
+            }
+        });
+
+        $exceptions->render(function (OrderNotFoundException $e, $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'message' => $e->getMessage(),
+                ], 422);
+            }
+        });
+
+        $exceptions->render(function (PaymentNotFoundException $e, $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'message' => $e->getMessage(),
+                ], 422);
+            }
+        });
+
+        $exceptions->render(function (EmptyCartException $e, $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'message' => $e->getMessage(),
+                ], 422);
+            }
+        });
+
+        $exceptions->render(function (OrderAlreadyPaidException $e, $request) {
             if ($request->is('api/*')) {
                 return response()->json([
                     'message' => $e->getMessage(),
